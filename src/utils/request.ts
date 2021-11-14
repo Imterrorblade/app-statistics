@@ -3,8 +3,9 @@ import { useMessage } from 'naive-ui'
 
 const message = useMessage()
 
+const baseApi = import.meta.env.VITE_APP_API_URL || ''
 const service = axios.create({
-  baseURL: '',//process.env.VUE_APP_BASE_API, // url = base url + request url
+  baseURL: baseApi,
   timeout: 6000
   // withCredentials: true // send cookies when cross-domain requests
 })

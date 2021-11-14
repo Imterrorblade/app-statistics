@@ -9,10 +9,10 @@
           <bar-chart :data="dataList" x-field="date" y-field="registerCount" title="注册人数"></bar-chart>
         </n-gi>
         <n-gi class="chart-item">
-          <bar-chart :data="dataList" x-field="date" y-field="totalCertifiedRate" title="总认证转化率"></bar-chart>
+          <bar-chart :data="dataList" x-field="date" y-field="totalCertifiedRate" title="总认证转化率" :config="rateConfig"></bar-chart>
         </n-gi>
         <n-gi class="chart-item">
-          <bar-chart :data="dataList" x-field="date" y-field="totalVipRate" title="总vip转化率"></bar-chart> 
+          <bar-chart :data="dataList" x-field="date" y-field="totalVipRate" title="总vip转化率" :config="rateConfig"></bar-chart> 
         </n-gi>
       </n-grid>
     </div>
@@ -20,7 +20,7 @@
 </template>
 <script lang="ts">
 import {defineComponent, ref, h } from 'vue'
-import { getStatisticsDataMock } from '../api/statistics'
+import { getStatisticsDataMock, getStatisticsData } from '../api/statistics'
 import {formatRate} from '../utils/format'
 import BarChart from '../components/charts/bar-chart.vue'
 export default defineComponent({
@@ -91,16 +91,37 @@ export default defineComponent({
     let dataList = ref([])
 
     //调用接口获取数据 
-    const fetchData = ()=> {
-      const data = getStatisticsDataMock()
+    const fetchData = async ()=> {
+      //数据获取接口，到时候需要放开
+      const data = await getStatisticsData()
       dataList.value = data
+
+      //数据mock, 以后要去掉
+      // const dataMock = await getStatisticsDataMock()
+      // dataList.value = dataMock
     }
     
     fetchData()
 
+    const rateConfig = {
+      yAxis: {
+        axisLabel: {
+          formatter(value: number) {
+            return formatRate(value)
+          }
+        }
+      },
+      tooltip: {
+        formatter(params: any){
+          return `${params.marker}${params.name}<span style="margin-left: 16px;">${formatRate(params.value)}</span>`
+        }
+      }
+    }
+
     return {
       dataList,
-      columns
+      columns,
+      rateConfig
     }
   }
 })
